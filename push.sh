@@ -15,14 +15,14 @@ if [ "$a" != "" ]; then
 	fi
 fi
 
-token=`cat -s ~/Documents/python/telegrambot/token.txt 2>/dev/null`
+#token=`cat -s ~/Documents/token.txt 2>/dev/null`
+#
+#if [ "$token" = "" ]; then
+#  echo "error fetching token"
+#  exit
+#fi
 
-if [ "$token" = "" ]; then
-  echo "error fetching token"
-  exit
-fi
-
-echo "token fetched succesfully"
+#echo "token fetched succesfully"
 
 git add --all
 
