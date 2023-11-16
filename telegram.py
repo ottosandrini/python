@@ -21,6 +21,18 @@ def getPIU():
 
     return want
 
+def get_last_update_id():
+    try:
+        with open('last_update_id.txt', 'r') as file:
+            return int(file.read().strip())
+    except (FileNotFoundError, ValueError):
+        # Return 0 if the file doesn't exist or the value is invalid
+        return 0
+
+def save_last_update_id(lui):
+    with open('last_update_id.txt', 'w') as file:
+        file.write(str(lui))
+
 class telbot():
     """
     telegramm bot class:
@@ -35,7 +47,7 @@ class telbot():
         self.pin=pin
         self.on = "echo 1 > /sys/class/gpio/gpio" + pin + "/value"
         self.off = "echo 0 > /sys/class/gpio/gpio" + pin + "/value"
-        self.last_update_id=0
+        self.last_update_id=get_last_update_id()
 
     def blink(self):
         print("blinking LED in 2 seconds")
@@ -65,17 +77,6 @@ class telbot():
     last_update_id is needed to avoid responding to all messages. They need to be stored in a file
     for when the programm stops running
     """
-    def load_last_update_id(self):
-        try:
-            with open('last_update_id.txt', 'r') as file:
-                return int(file.read().strip())
-        except (FileNotFoundError, ValueError):
-            # Return 0 if the file doesn't exist or the value is invalid
-           return 0
-
-    def save_last_update_id(self):
-        with open('last_update_id.txt', 'w') as file:
-            file.write(str(self.last_update_id))
     
 
     def update(self):   # makes a getUpdate request
@@ -97,7 +98,6 @@ class telbot():
                     self.updates.append(update)
                     self.respond(update, trfa)
                 self.last_update_id = current_update_id
-                #self.save_last_update_id()
 
 
     
@@ -133,7 +133,7 @@ class telbot():
         self.request("sendMessage", F"?chat_id={chat_id}&text={answer}")
 
         # saving the last update_id to avoid chaos 
-        self.save_last_update_id()
+        save_last_update_id(self.last_update_id)
 
 
 #  defining the two functions for the two threads:      
@@ -183,4 +183,3 @@ bot_thread.join()
 
 Raspitin.save_last_update_id()
 sp.call("echo 0 > /sys/class/gpio/gpio15/value", shell=True)
-
