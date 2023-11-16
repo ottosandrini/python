@@ -15,7 +15,7 @@ if [ "$a" != "" ]; then
 	fi
 fi
 
-token=`cat -s ~/Documents/programmieren/cpp/token.txt 2>/dev/null`
+token=`cat -s ~/Documents/python/telegrambot/token.txt 2>/dev/null`
 
 if [ "$token" = "" ]; then
   echo "error fetching token"
