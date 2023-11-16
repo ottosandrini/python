@@ -52,15 +52,14 @@ class telbot():
         self.off = "echo 0 > /sys/class/gpio/gpio" + pin + "/value"
         self.last_update_id=get_last_update_id()
 
-    def blink(self):
-        print("blinking LED in 2 seconds")
-        time.sleep(2)
+    def blink(self, speed):
+        time.sleep(speed)
         sp.call(self.on, shell=True)
-        time.sleep(0.5)
+        time.sleep(speed)
         sp.call(self.off, shell=True)
-        time.sleep(0.5)
+        time.sleep(speed)
         sp.call(self.on, shell=True)
-        time.sleep(0.5)
+        time.sleep(speed)
         sp.call(self.off, shell=True)
     updates=[]
     def request(self, method, param):
@@ -127,6 +126,11 @@ class telbot():
             else:
                 answer="turning LED off"
                 sp.call(self.off, shell=True)
+        elif message_text=="blink":
+            answer=";)"
+            self.blink(0.2)
+        elif message_text=="clear":
+            answer="what?"
         elif message_text=="s":
             TF[0]=False
             myin="s"
@@ -162,7 +166,7 @@ running=[True]
 #  initializing the telbot instance Raspitin, loading the last update id and updating
 Raspitin = telbot("RaspitinLED_bot", "6439165721:AAFU3SHmxCVG-4qnQYV0MQuU0PH-Dt__9us", PIU)
 #get_last_update_id(Raspitin.last_update_id)
-Raspitin.blink()
+Raspitin.blink(0.5)
 Raspitin.incoming(running)
 
 
