@@ -126,6 +126,7 @@ class telbot():
                 sp.call(self.off, shell=True)
         elif message_text=="s":
             TF[0]=False
+            myin="s"
             answer="stopping..."
         else:
             answer="Invalid command"
@@ -137,16 +138,14 @@ class telbot():
 
 
 #  defining the two functions for the two threads:      
-
-def ask_input(tf):
-    myin=""
+def ask_input(myin, tf):
     while myin != "s":
         myin = input("Enter 's' to stop!")
     tf[0] = False
 
 def loop(tf, bot):
     while tf[0] == True:
-        bot.load_last_update_id()
+        #get_last_update_id(bot.last_update_id)
         bot.incoming(tf)
     
 
@@ -155,17 +154,17 @@ def loop(tf, bot):
 
 #  asking which gpio pin should be used
 PIU = getPIU();
-
+myin=""
 running=[True]
 #  initializing the telbot instance Raspitin, loading the last update id and updating
 Raspitin = telbot("RaspitinLED_bot", "6439165721:AAFU3SHmxCVG-4qnQYV0MQuU0PH-Dt__9us", PIU)
-Raspitin.load_last_update_id()
+#get_last_update_id(Raspitin.last_update_id)
 Raspitin.blink()
 Raspitin.incoming(running)
 
 
 # Create threads
-input_thread = threading.Thread(target=ask_input, args=(running,))
+input_thread = threading.Thread(target=ask_input, args=(myin, running,))
 bot_thread = threading.Thread(target=loop, args=(running, Raspitin))
 
 # Start threads
@@ -181,5 +180,5 @@ input_thread.join()
 bot_thread.join()
 
 
-Raspitin.save_last_update_id()
+save_last_update_id(Raspitin.last_update_id)
 sp.call("echo 0 > /sys/class/gpio/gpio15/value", shell=True)
