@@ -1,4 +1,4 @@
-# -- GNU PPLv3 --
+# -- GNU GPLv3 --
 
 import requests as rq
 import time
