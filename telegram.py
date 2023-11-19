@@ -1,4 +1,4 @@
-# code should be under GNU PPLv3
+# -- GNU PPLv3 --
 # run "touch last_update_id.txt" in the same folder as this file, before executing the code
 
 import requests as rq
