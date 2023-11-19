@@ -55,6 +55,8 @@ class telbot():
             incoming()      #calls the update() method, checks its output and calls the respond() function
             respond()       #responds to messages using the request() method
 
+            designed to use incoming() to handle everything (update() -> respond() -> request())
+
     """
     def __init__(self, name: str, api_key: str, pin: str):
         self.name=name
