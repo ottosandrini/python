@@ -31,7 +31,7 @@ def getPIU():
     
     return want
 
-def get_last_update_id():
+def get_last_update_id():   # looks for "last_update_id.txt" and returns its contents // creates the file if it does not exist
     try:
         with open('last_update_id.txt', 'r') as file:
             return int(file.read().strip())
@@ -39,19 +39,24 @@ def get_last_update_id():
         f = open("last_update_id.txt", "x")
         return 0
 
-def save_last_update_id(lui):
+def save_last_update_id(lui):   # saves parameter to "last_update_id.txt"
     with open('last_update_id.txt', 'w') as file:
         file.write(str(lui))
 
 class telbot():
     """
     telegramm bot class:
-        status=True --> active
-        status=False --> inactive
-        change status using activate() or deactivate()
+        initialize like so: mybot = telbot("mybotname", "myapikey", "mygpiopinnumber")
         
+        methods:
+            blink()         #flashes LED twice
+            request()       #makes a request to the telegram api
+            update()        #updates to check for messages
+            incoming()      #calls the update() method, checks its output and calls the respond() function
+            respond()       #responds to messages using the request() method
+
     """
-    def __init__(self, name, api_key, pin):
+    def __init__(self, name: str, api_key: str, pin: str):
         self.name=name
         self.api_key=api_key
         self.pin=pin
@@ -59,7 +64,7 @@ class telbot():
         self.off = "echo 0 > /sys/class/gpio/gpio" + pin + "/value"
         self.last_update_id=get_last_update_id()
 
-    def blink(self, speed):
+    def blink(self, speed): # flashes LED twice
         time.sleep(speed)
         sp.call(self.on, shell=True)
         time.sleep(speed)
@@ -69,24 +74,13 @@ class telbot():
         time.sleep(speed)
         sp.call(self.off, shell=True)
     updates=[]
-    def request(self, method, param):
+    
+    def request(self, method, param):   # generates a request // can be used for all types of requests
         url = "https://api.telegram.org/bot" + self.api_key + "/" + method + param
         #print(F"making a request @ {url}")
         resp=rq.get(url)
         #print(resp.status_code)
         return resp
-    def methods():
-        print("The available request methods are:")
-        print("getME")
-        print("sendMessage:")
-        print("")
-    
-
-    """
-    last_update_id is needed to avoid responding to all messages. They need to be stored in a file
-    for when the programm stops running
-    """
-    
 
     def update(self):   # makes a getUpdate request
         updata = self.request("getUpdates", F"?offset={self.last_update_id + 1}")
@@ -98,7 +92,7 @@ class telbot():
         #check if data is empty
         if data['result']!=[]:
             for update in data['result']:
-                #print(F"last_updat_id:       {self.last_update_id}")
+                #printdd(F"last_updat_id:       {self.last_update_id}")
                 current_update_id = int(update['update_id'])
                 #print(F"current_update_id:   {current_update_id}")
                 if current_update_id > self.last_update_id:
@@ -112,11 +106,8 @@ class telbot():
     
     def respond(self, thing, TF):   #does something on message
 
-        # first get values that are important for a response
         chat_id = thing['message']['chat']['id']
         message_text = thing['message']['text'].lower()
-
-        # check the pin value
         pinadd = "/sys/class/gpio/gpio" + self.pin + "/value"
         gpio_val = int(sp.run(['cat', pinadd], capture_output=True, text=True).stdout)
 
@@ -144,6 +135,7 @@ class telbot():
             answer="stopping..."
         else:
             answer="Invalid command"
+       
         # sending the sendMessage - request with the paramters answer & chat_id
         self.request("sendMessage", F"?chat_id={chat_id}&text={answer}")
 
@@ -151,18 +143,17 @@ class telbot():
         save_last_update_id(self.last_update_id)
 
 
-#  defining the two functions for the two threads:      
-def ask_input(myin, tf):
+def ask_input(myin, tf): # stops the programm if the user enters "s"
     while myin != "s":
         myin = input("Enter 's' to stop! \n")
     tf[0] = False
 
-def loop(tf, bot):
+def loop(tf, bot): # continiously makes the bot update messages
     while tf[0] == True:
-        #get_last_update_id(bot.last_update_id)
         bot.incoming(tf)
 
-def gettoken():
+
+def gettoken(): # looks for "token.txt" -> token.txt needs to contain a valid telegram bot token
     try:
         with open('token.txt', 'r') as file:
             return str(file.read().strip())
@@ -180,7 +171,6 @@ token=gettoken()
 
 #  initializing the telbot instance Raspitin, loading the last update id and updating
 Raspitin = telbot("RaspitinLED_bot", token, PIU)
-#get_last_update_id(Raspitin.last_update_id)
 Raspitin.blink(0.5)
 Raspitin.incoming(running)
 
@@ -193,14 +183,11 @@ bot_thread = threading.Thread(target=loop, args=(running, Raspitin))
 input_thread.start()
 bot_thread.start()
 
-# check if loop finished before input_thread
-#if bot_thread.is_alive()==False:
-#    input_thread._stop()
 
 # Wait for both threads to finish
 input_thread.join()
 bot_thread.join()
 
-
+# saving last_update_id & shutting off the LED
 save_last_update_id(Raspitin.last_update_id)
 sp.call("echo 0 > /sys/class/gpio/gpio15/value", shell=True)
