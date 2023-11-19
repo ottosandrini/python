@@ -161,7 +161,13 @@ def loop(tf, bot):
     while tf[0] == True:
         #get_last_update_id(bot.last_update_id)
         bot.incoming(tf)
-    
+
+def gettoken():
+    try:
+        with open('token.txt', 'r') as file:
+            return str(file.read().strip())
+    except:
+        print("Failed to get token!")
 
 
 #####  "main function" #####
@@ -170,13 +176,6 @@ def loop(tf, bot):
 PIU = getPIU();
 myin=""
 running=[True]
-
-def gettoken():
-    try:
-        with open('token.txt', 'r') as file:
-            return str(file.read().strip())
-    except:
-        print("Failed to get token!")
 token=gettoken()
 
 #  initializing the telbot instance Raspitin, loading the last update id and updating
