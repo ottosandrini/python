@@ -37,7 +37,7 @@ def get_last_update_id():
         with open('last_update_id.txt', 'r') as file:
             return int(file.read().strip())
     except (FileNotFoundError, ValueError):
-        # Return 0 if the file doesn't exist or the value is invalid
+        f = open("last_update_id.txt", "x")
         return 0
 
 def save_last_update_id(lui):
