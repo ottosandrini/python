@@ -11,17 +11,25 @@ import threading
 def getPIU():
     """
     asks which gpio pin the user wants, activates it, sets it to output and returns it
-    could implement:  --check if already active
     """
-    want=input("Which gpio pin would you like to use: (e.g: 15)\n") or "15"
-    command = "echo " + want + " > /sys/class/gpio/export"
-    sp.call(command, shell=True)
-    #print(F"gpio pin {want} wurde aktiviert")
-    # activate the pin as out
-    command = "echo out > /sys/class/gpio/gpio" + want + "/direction"
-    sp.call(command, shell=True)
-    #print(F"gpio pin {want} was set to output")
 
+    want=input("Which gpio pin would you like to use: (e.g: 15)\n") or "15"
+    
+    command = "ls /sys/class/gpio/ | grep gpio" + want
+    test = str(sp.run(command, capture_output=True, shell=True).stdout)
+    teststring = "gpio" + want
+
+    if teststring in test:
+        command = "echo out > /sys/class/gpio/gpio" +want+ "/direction"
+        sp.call(command, shell=True)
+
+    else:
+        command = "echo " + want + " > /sys/class/gpio/export"
+        sp.call(command, shell=True)
+        time.sleep(2)
+        command = "echo out > /sys/class/gpio/gpio" + want + "/direction"
+        sp.call(command, shell=True)
+    
     return want
 
 def get_last_update_id():
@@ -91,9 +99,9 @@ class telbot():
         #check if data is empty
         if data['result']!=[]:
             for update in data['result']:
-                print(F"last_updat_id:       {self.last_update_id}")
+                #print(F"last_updat_id:       {self.last_update_id}")
                 current_update_id = int(update['update_id'])
-                print(F"current_update_id:   {current_update_id}")
+                #print(F"current_update_id:   {current_update_id}")
                 if current_update_id > self.last_update_id:
                     #print(F"handling update with id: {update['update_id']}")
                     self.updates.clear()
@@ -147,7 +155,7 @@ class telbot():
 #  defining the two functions for the two threads:      
 def ask_input(myin, tf):
     while myin != "s":
-        myin = input("Enter 's' to stop!")
+        myin = input("Enter 's' to stop! \n")
     tf[0] = False
 
 def loop(tf, bot):
@@ -163,8 +171,17 @@ def loop(tf, bot):
 PIU = getPIU();
 myin=""
 running=[True]
+
+def gettoken():
+    try:
+        with open('token.txt', 'r') as file:
+            return str(file.read().strip())
+    except:
+        print("Failed to get token!")
+token=gettoken()
+
 #  initializing the telbot instance Raspitin, loading the last update id and updating
-Raspitin = telbot("RaspitinLED_bot", "6439165721:AAFU3SHmxCVG-4qnQYV0MQuU0PH-Dt__9us", PIU)
+Raspitin = telbot("RaspitinLED_bot", token, PIU)
 #get_last_update_id(Raspitin.last_update_id)
 Raspitin.blink(0.5)
 Raspitin.incoming(running)
