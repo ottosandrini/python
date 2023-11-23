@@ -16,6 +16,8 @@ def read_i2c() -> bytes:
 
 if __name__ == "__main__":
 
+    i = 0
+
     while True:
 
         get_i2c('0x3B')
@@ -33,6 +35,10 @@ if __name__ == "__main__":
         print(final_value)
 
         time.sleep(0.05)
+
+        i+=1
+        if i > 10:
+            break
 
 
         # get_i2c('0x3D')
