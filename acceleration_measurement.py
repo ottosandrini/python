@@ -8,8 +8,6 @@ def get_i2c(reg: str):
 
 def read_i2c() -> bytes:
     with tempfile.TemporaryFile() as tempf:
-            proc = subprocess.Popen(['echo'], stdout=tempf)
-            proc.wait()
             tempf.seek(0)
             bytes_arr = tempf.read()
             print(f"tempf read {bytes_arr}")
