@@ -21,17 +21,11 @@ if __name__ == "__main__":
 
     while True:
 
+        x1 = read_i2c()
         get_i2c('0x3B')
 
-        time.sleep(0.05)
-
-        x1 = read_i2c()
-
-        get_i2c('0x3C')
-
-        time.sleep(0.05)
-
         x2 = read_i2c()
+        get_i2c('0x3C')
 
         final_value = (x1 << 8) | x2
 
