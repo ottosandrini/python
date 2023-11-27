@@ -12,6 +12,7 @@ def read_i2c() -> bytes:
             proc.wait()
             tempf.seek(0)
             bytes_arr = tempf.read()
+            print(f"tempf read {bytes_arr}")
             return bytes_arr[0]
 
 if __name__ == "__main__":
