@@ -25,7 +25,7 @@ if __name__ == "__main__":
         x2 = read_i2c()
         get_i2c('0x3C')
 
-        final_value = (x1 << 8) | x2
+        # final_value = (x1 << 8) | x2
 
         print(f"Output x1 - {x1}, x2 - {x2}")
 
