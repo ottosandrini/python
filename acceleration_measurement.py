@@ -12,7 +12,7 @@ def read_i2c() -> bytes:
             proc.wait()
             tempf.seek(0)
             bytes_arr = tempf.read()
-            return bytes_arr[1]
+            return bytes_arr[0]
 
 if __name__ == "__main__":
 
@@ -22,13 +22,13 @@ if __name__ == "__main__":
 
         get_i2c('0x3B')
 
-        time.sleep(0.05)
+        # time.sleep(0.05)
         
         x1 = read_i2c()
 
         get_i2c('0x3C')
 
-        time.sleep(0.05)
+        # time.sleep(0.05)
 
         x2 = read_i2c()
 
