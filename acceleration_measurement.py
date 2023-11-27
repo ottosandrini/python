@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
         final_value = (x1 << 8) | x2
 
-        print(final_value)
+        # print(final_value)
 
         time.sleep(0.05)
 
