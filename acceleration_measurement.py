@@ -23,15 +23,15 @@ if __name__ == "__main__":
 
         get_i2c('0x3B')
 
-        # time.sleep(0.05)
         
         x1 = read_i2c()
+        time.sleep(0.05)
 
         get_i2c('0x3C')
 
-        # time.sleep(0.05)
 
         x2 = read_i2c()
+        time.sleep(0.05)
 
         final_value = (x1 << 8) | x2
 
