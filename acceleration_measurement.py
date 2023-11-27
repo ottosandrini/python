@@ -8,7 +8,7 @@ def get_i2c(reg: str):
 
 def read_i2c() -> bytes:
     with tempfile.TemporaryFile() as tempf:
-            proc = subprocess.Popen(['echo', 'a', 'b'], stdout=tempf)
+            proc = subprocess.Popen(['echo'], stdout=tempf)
             proc.wait()
             tempf.seek(0)
             bytes_arr = tempf.read()
@@ -23,15 +23,15 @@ if __name__ == "__main__":
 
         get_i2c('0x3B')
 
-        
-        x1 = read_i2c()
         time.sleep(0.05)
+
+        x1 = read_i2c()
 
         get_i2c('0x3C')
 
+        time.sleep(0.05)
 
         x2 = read_i2c()
-        time.sleep(0.05)
 
         final_value = (x1 << 8) | x2
 
